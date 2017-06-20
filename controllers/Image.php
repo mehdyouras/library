@@ -43,7 +43,6 @@ class Image
                     } else {
                         imagejpeg($destResource, $destFile, 100);
                     }
-
                     return $destFile;
                 } else {
                     $_SESSION['error'][] = 'Ce type de fichier image n\'est pas accepté';

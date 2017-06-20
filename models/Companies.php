@@ -289,17 +289,16 @@ class Companies
                             `img`= :img,
                             `description`= :description,
                             `phone`= :phone,
-                            `email`= :email,
-                            WHERE `id`= :companyId;
-';
+                            `email`= :email
+                            WHERE `id`= :companyId';
             try{
                 $pdoSt = $pdo->prepare($sql);
                 $pdoSt->execute([
-                    ':companyId' => $details['companyId'],
+                    ':companyId' => $details['updateId'],
                     ':name' => $details['name'],
                     ':type' => $details['type'],
                     ':locality' => $details['locality'],
-                    ':streetAddress' => $details['address'],
+                    ':address' => $details['address'],
                     ':img' => $details['img'],
                     ':description' => $details['description'],
                     ':phone' => $details['phone'],

@@ -1,5 +1,6 @@
     <li>
-        <form action="index.php" method="post">
+        <p><a id="item<?= $company->companyId; ?>" href="index.php?a=getCompany&r=companies&companyId=<?= $company->companyId; ?>"><?= $company->companyName; ?></a></p>
+        <form  enctype="multipart/form-data" action="index.php" method="post">
             <label for="name">Nom de l'entreprise</label>
             <input type="text" id="name" name="name" value="<?= $company->companyName ?>">
 
@@ -13,7 +14,7 @@
             <label for="type">Localité</label>
             <select value="<?= $company->companyLocalityId ?>" name="locality" id="locality">
                 <?php foreach ($data['localities'] as $locality) :?>
-                    <option value="<?= $locality->localityId ?>"><?= $locality->localityName ?></option>
+                    <option <?php if($company->companyLocalityId === $locality->localityId) { echo "selected='selected'";}; ?> value="<?= $locality->localityId ?>"><?= $locality->localityName ?></option>
                 <?php endforeach; ?>
             </select>
 
@@ -29,7 +30,7 @@
             <label for="img">Logo de l'entreprise</label>
             <img src="<?= $company->companyImg ?>" alt="Logo de l'entreprise">
             <input type="hidden" name="MAX_FILE_SIZE" value="3000000000">
-            <input type="file" name="img">
+            <input type="file" name="img" id="img">
 
             <label for="description">Description</label>
             <textarea name="description" id="description" cols="30" rows="10"><?= $company->companyDescription; ?></textarea>

@@ -27,7 +27,7 @@
 
     <label for="img">Logo de l'entreprise</label>
     <input type="hidden" name="MAX_FILE_SIZE" value="3000000000">
-    <input type="file" name="img">
+    <input type="file" name="img" id="img">
 
     <label for="description">Description</label>
     <textarea name="description" id="description" cols="30" rows="10"><?php if(isset($_SESSION['description'])) {echo $_SESSION['description'];}; ?></textarea>

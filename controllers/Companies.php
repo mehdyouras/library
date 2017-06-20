@@ -164,6 +164,7 @@ class Companies extends Controller
         $companiesList = $this->getUserCompanies();
 
         $companies = $companiesList['companies'];
+        $_SESSION['img'] = $companies[0]->companyImg;
         $view = $companiesList['view'];
 
         return compact('types', 'companies', 'view', 'localities');
@@ -179,11 +180,19 @@ class Companies extends Controller
         $details['address'] = $_POST['address'];
         $details['email'] = $_POST['email'];
         $details['phone'] = $_POST['phone'];
+        $details['updateId'] = $_POST['updateId'];
 
         if(isset($_POST['description'])) {
             $details['description'] = $_POST['description'];
         }
+
         $details['img'] = $this->controllersImage->handleImageUpload('img');
+
+        if(!$details['img']) {
+            $details['img'] = $_SESSION['img'];
+        }
+
+        $this->modelsCompanies->updateCompany($details);
 
         header('Location:'.SITE_URL.'/index.php?a=getUserCompanies&r=companies');
         exit;
