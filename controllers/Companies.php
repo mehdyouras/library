@@ -19,38 +19,86 @@ class Companies extends Controller
     private $modelsLocalities = null;
     private $controllersImage = null;
 
-    public function indexAll() { // Affiche toutes les entreprises
+    public function __construct()
+    {
         $this->modelsCompanies = new modelsCompanies();
+        $this->modelsTypes = new modelsTypes();
+        $this->modelsLocalities = new modelsLocalities();
+    }
+
+    public function indexAll() { // Affiche toutes les entreprises
 
         $companies = $this->modelsCompanies->getAllCompanies();
+        $types = $this->modelsTypes->getTypes();
+        $localities = $this->modelsLocalities->getLocalities();
 
         if($companies) {
             $view = 'views/part/companyIndex.php';
-            return compact('view', 'companies');
+            return compact('view', 'companies', 'types', 'localities');
         }
 
         return ['view' => 'views/part/noCompany.php'];
+    }
+
+    public function indexBy() {
+        if($_GET['locality'] === 'all') {
+            $locality = '';
+        } else {
+            $locality = $_GET['locality'];
+        }
+
+        if($_GET['type'] === 'all') {
+            $type = '';
+        } else {
+            $type = $_GET['type'];
+        }
+
+        if($type === '' && $locality !== '') {
+            $case = 1;
+        } elseif ($type !== '' && $locality === '') {
+            $case = 2;
+        } elseif($type === '' && $locality === '') {
+            $case = 3;
+        }elseif($type !== '' && $locality !== '') {
+            $case = 4;
+        }
+
+        $companies = $this->modelsCompanies->getCompaniesBy($type, $locality, $case);
+        $types = $this->modelsTypes->getTypes();
+        $localities = $this->modelsLocalities->getLocalities();
+        $view = 'views/part/companyIndex.php';
+
+        if(!$companies) {
+            $_SESSION['error'] = 'Aucun résultat.';
+        }
+
+        return compact('companies', 'view', 'localities', 'types');
     }
 
     public function getUserCompanies() { // Affiche toutes les entreprises liées à l'user connecté
         $this->checkLogin();
-        $this->modelsCompanies = new modelsCompanies();
 
         $companies = $this->modelsCompanies->getUserCompanies($_SESSION['user']->id);
+        $types = $this->modelsTypes->getTypes();
+        $localities = $this->modelsLocalities->getLocalities();
 
         if($companies) {
             $view = 'views/part/companyIndex.php';
-            var_dump($companies);
-            return compact('companies', 'view');
+            return compact('companies', 'view', 'localities', 'types');
         }
         return ['view' => 'views/part/noCompany.php'];
     }
 
+    public function getCompany() {
+        $company = $this->modelsCompanies->getCompany($_GET['companyId']);
+        $company = $company[0];
+        $view = 'views/part/singleCompany.php';
+
+        return compact('view', 'company');
+    }
+
     public function getAddCompany() { // Récupère le formulaire pour ajouter une entreprise
         $this->checkLogin();
-        $this->modelsTypes = new modelsTypes();
-        $this->modelsLocalities = new modelsLocalities();
-
 
         $types = $this->modelsTypes->getTypes();
         $localities = $this->modelsLocalities->getLocalities();
@@ -61,17 +109,38 @@ class Companies extends Controller
 
     public function addCompany() { // Ajoute une entreprise
         $this->checkLogin();
-        $this->modelsCompanies = new modelsCompanies();
         $this->controllersImage = new controllersImage();
+
+        if($_POST['name'] === '' || $_POST['type'] === '' || $_POST['locality'] === '' || $_POST['address'] === '' || $_POST['email'] === '' || $_POST['phone'] === '' || $_FILES['img'] === '') {
+            $_SESSION['error'][] = 'Veuillez remplir tous les champs.';
+
+            $_SESSION['name'] = $_POST['name'];
+            $_SESSION['type'] = $_POST['type'];
+            $_SESSION['locality'] = $_POST['locality'];
+            $_SESSION['address'] = $_POST['address'];
+            $_SESSION['email'] = $_POST['email'];
+            $_SESSION['phone'] = $_POST['phone'];
+            $_SESSION['description'] = $_POST['description'];
+
+
+        }
 
         $details['name'] = $_POST['name'];
         $details['type'] = $_POST['type'];
         $details['locality'] = $_POST['locality'];
         $details['address'] = $_POST['address'];
+        $details['email'] = $_POST['email'];
+        $details['phone'] = $_POST['phone'];
+
         if(isset($_POST['description'])) {
             $details['description'] = $_POST['description'];
         }
         $details['img'] = $this->controllersImage->handleImageUpload('img');
+
+        if(isset($_SESSION['error'])) {
+            header('Location:'.SITE_URL.'/index.php?a=getAddCompany&r=companies');
+            exit;
+        }
 
         $lastInsertId = $this->modelsCompanies->addCompany($details);
         $this->modelsCompanies->linkUserCompany($_SESSION['user']->id, $lastInsertId);
@@ -82,7 +151,6 @@ class Companies extends Controller
 
     public function removeCompany() {
         $this->checkLogin();
-        $this->modelsCompanies = new modelsCompanies();
 
         $this->modelsCompanies->removeCompany($_POST['companyId']);
         header('Location:'.SITE_URL.'/index.php?a=getUserCompanies&r=companies');
@@ -90,8 +158,6 @@ class Companies extends Controller
 
     public function getUpdateCompany() {
         $this->checkLogin();
-        $this->modelsTypes = new modelsTypes();
-        $this->modelsLocalities = new modelsLocalities();
 
         $types = $this->modelsTypes->getTypes();
         $localities = $this->modelsLocalities->getLocalities();
@@ -111,6 +177,9 @@ class Companies extends Controller
         $details['type'] = $_POST['type'];
         $details['locality'] = $_POST['locality'];
         $details['address'] = $_POST['address'];
+        $details['email'] = $_POST['email'];
+        $details['phone'] = $_POST['phone'];
+
         if(isset($_POST['description'])) {
             $details['description'] = $_POST['description'];
         }

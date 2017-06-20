@@ -1,6 +1,8 @@
 <?php
 return [
     'default'           => 'GET/companies/indexAll',
+    'indexBy'           => 'GET/companies/indexBy',
+    'signleCompany'     => 'GET/companies/getCompany',
 
     'getLogin'          => 'GET/auth/getLogin',
     'login'             => 'POST/auth/checkLogin',

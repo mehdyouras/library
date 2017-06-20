@@ -45,6 +45,8 @@ class Image
                     }
 
                     return $destFile;
+                } else {
+                    $_SESSION['error'][] = 'Ce type de fichier image n\'est pas accepté';
                 }
             }
         }

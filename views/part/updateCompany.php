@@ -20,7 +20,13 @@
             <label for="address">Adresse</label>
             <input value="<?= $company->companyAddress ?>" type="text" id="address" name="address">
 
-            <label for="cover">Logo de l'entreprise</label>
+            <label for="address">Adresse email</label>
+            <input value="<?= $company->companyEmail ?>" type="email" id="email" name="email">
+
+            <label for="address">Numéro de téléphone</label>
+            <input value="<?= $company->companyPhone ?>" type="text" id="phone" name="phone">
+
+            <label for="img">Logo de l'entreprise</label>
             <img src="<?= $company->companyImg ?>" alt="Logo de l'entreprise">
             <input type="hidden" name="MAX_FILE_SIZE" value="3000000000">
             <input type="file" name="img">

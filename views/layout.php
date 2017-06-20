@@ -63,18 +63,23 @@
 
             <?php endif; ?>
         </nav>
-        <?php if(isset($_SESSION['error'])) : ?>
-            <p class="error"><?= $_SESSION['error']; ?></p>
-            <?php $_SESSION['error'] = null; ?>
-        <?php endif; ?>
-
-        <?php if(isset($_SESSION['success'])) : ?>
-            <p class="success"><?= $_SESSION['success']; ?></p>
-            <?php $_SESSION['success'] = null; ?>
-        <?php endif; ?>
     </header>
     <section class="wrapper">
         <h2>Contenu principal</h2>
+        <?php if(isset($_SESSION['error'])) : ?>
+            <?php foreach ($_SESSION['error'] as $error) : ?>
+                <p class="error"><?= $error ?></p>
+            <?php endforeach; ?>
+            <?php $_SESSION['error'] = null; ?>
+        <?php endif; ?>
+
+        <?php if(isset($_SESSION['success_message'])) : ?>
+            <?php foreach ($_SESSION['success_message'] as $success) : ?>
+                <p class="success"><?= $success ?></p>
+            <?php endforeach; ?>
+            <?php $_SESSION['success_message'] = null; ?>
+        <?php endif; ?>
+
         <?php include($data['view']);?>
     </section>
 </body>
