@@ -19,12 +19,36 @@ class Auth {
     public function getLogin() {
         if(isset($_SESSION['user'])) {
             header('Location: '.SITE_URL);
-            die();
+            exit;
         }
         return ['view' => 'views/part/userLogin.php'];
     }
 
     public function checkLogin() {
-        var_dump('test');
+        var_dump('checkLogin');
+        $_SESSION['email'] = $_POST['email'];
+        $user = $this->authModel->checkUser($_POST['email'], $_POST['password']);
+        if($user) {
+            $_SESSION['user'] = $user[0];
+            header('Location:'.SITE_URL);
+            exit;
+        }
+        header('Location:'.SITE_URL.'/index.php?a=getLogin&r=auth');
+        exit;
+    }
+
+    public function logout() {
+        $_SESSION = array();
+
+        if (ini_get("session.use_cookies")) {
+            $params = session_get_cookie_params();
+            setcookie(session_name(), '', time() - 42000,
+                $params["path"], $params["domain"],
+                $params["secure"], $params["httponly"]
+            );
+        }
+        session_destroy();
+        header('Location:'.SITE_URL);
+        exit;
     }
 }

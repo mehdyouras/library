@@ -12,12 +12,14 @@ use Models\Model as modelsModel;
 class Companies
 {
     private $modelsModel = null;
+
     public function getAllCompanies() {
         $this->modelsModel = new modelsModel();
         $pdo = $this->modelsModel->connectDB();
         if($pdo) {
             if ($pdo){
-                $sql = 'SELECT  companies.name as companyName,
+                $sql = 'SELECT  companies.id as companyId,
+                                companies.name as companyName,
                                 types.name as companyType,
                                 localities.name as companyLocality,
                                 companies.streetAddress as companyAddress,
@@ -34,6 +36,59 @@ class Companies
             }else{
                 die('Quelque chose a posé un problème lors de la récuprétation des entreprises.');
             }
+        }
+    }
+
+    public function getUserCompanies($userId) {
+        $this->modelsModel = new modelsModel();
+        $pdo = $this->modelsModel->connectDB();
+        if($pdo) {
+            if ($pdo){
+                $sql = 'SELECT  companies.id as companyId,
+                                companies.name as companyName,
+                                types.name as companyType,
+                                localities.name as companyLocality,
+                                companies.streetAddress as companyAddress,
+                                companies.img as companyImg
+                                FROM user_company
+                                LEFT JOIN companies ON user_company.company_id = companies.id 
+                                LEFT JOIN types ON companies.type = types.id
+                                LEFT JOIN localities ON companies.locality = localities.id 
+                                WHERE user_company.user_id = :userId';
+                try{
+                    $pdoSt = $pdo->prepare($sql);
+                    $pdoSt->execute([
+                        ':userId' => $userId
+                    ]);
+                    return $pdoSt->fetchAll();
+                }catch (PDOException $e){
+                    return '';
+                }
+            }else{
+                die('Quelque chose a posé un problème lors de la récuprétation des entreprises.');
+            }
+        }
+    }
+
+    public function addCompany($details) {
+        $this->modelsModel = new modelsModel();
+        $pdo = $this->modelsModel->connectDB();
+
+        if($pdo) {
+            $sql = 'INSERT INTO companies(`name`, `type`, `locality`, `streetAddress`, `img`, `description`)
+                                          VALUES (:name, :type, :locality, :streeAddress, :img, :description)';
+            try{
+                $pdoSt = $pdo->prepare($sql);
+                $pdoSt->execute([
+                    ':name' => $details['']
+                ]);
+                return $pdo->lastInsertId();
+            }catch (PDOException $e){
+                return '';
+            }
+        }else{
+            die('Quelque chose a posé un problème lors de la récuprétation des entreprises.');
+        }
         }
     }
 }
