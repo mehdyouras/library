@@ -76,11 +76,16 @@ class Companies
 
         if($pdo) {
             $sql = 'INSERT INTO companies(`name`, `type`, `locality`, `streetAddress`, `img`, `description`)
-                                          VALUES (:name, :type, :locality, :streeAddress, :img, :description)';
+                                          VALUES (:name, :type, :locality, :streetAddress, :img, :description)';
             try{
                 $pdoSt = $pdo->prepare($sql);
                 $pdoSt->execute([
-                    ':name' => $details['']
+                    ':name' => $details['name'],
+                    ':type' => $details['type'],
+                    ':locality' => $details['locality'],
+                    ':streetAddress' => $details['address'],
+                    ':img' => $details['img'],
+                    ':description' => $details['description']
                 ]);
                 return $pdo->lastInsertId();
             }catch (PDOException $e){
@@ -89,6 +94,26 @@ class Companies
         }else{
             die('Quelque chose a posé un problème lors de la récuprétation des entreprises.');
         }
+    }
+
+    public function linkUserCompany($userId, $companyId) {
+        $this->modelsModel = new modelsModel();
+        $pdo = $this->modelsModel->connectDB();
+
+        if($pdo) {
+            $sql = 'INSERT INTO user_company(`user_id`, `company_id`)
+                                          VALUES (:userId, :companyId)';
+            try{
+                $pdoSt = $pdo->prepare($sql);
+                $pdoSt->execute([
+                    ':userId' => $userId,
+                    ':companyId' => $companyId
+                ]);
+            }catch (PDOException $e){
+                return '';
+            }
+        }else{
+            die('Quelque chose a posé un problème lors de la récuprétation des entreprises.');
         }
     }
 }

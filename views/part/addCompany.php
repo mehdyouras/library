@@ -22,7 +22,7 @@
 
     <label for="cover">Logo de l'entreprise</label>
     <input type="hidden" name="MAX_FILE_SIZE" value="3000000000">
-    <input type="file" name="cover">
+    <input type="file" name="img">
 
     <label for="description">Description</label>
     <textarea name="description" id="description" cols="30" rows="10"></textarea>

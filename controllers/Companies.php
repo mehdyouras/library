@@ -17,7 +17,7 @@ class Companies
     private $modelsTypes = null;
     private $modelsLocalities = null;
 
-    public function indexAll() {
+    public function indexAll() { // Affiche toutes les entreprises
         $this->modelsCompanies = new modelsCompanies();
 
         $companies = $this->modelsCompanies->getAllCompanies();
@@ -30,9 +30,7 @@ class Companies
         die('Il a eu un problème lors de l\'affichage des entreprises');
     }
 
-    public function getUserCompanies() {
-        $this->checkLogin();
-
+    public function getUserCompanies() { // Affiche toutes les entreprises liées à l'user connecté
         $this->modelsCompanies = new modelsCompanies();
 
         $companies = $this->modelsCompanies->getUserCompanies($_SESSION['user']->id);
@@ -45,9 +43,10 @@ class Companies
         die('Il a eu un problème lors de l\'affichage de vos entreprises');
     }
 
-    public function getAddCompany() {
+    public function getAddCompany() { // Récupère le formulaire pour ajouter une entreprise
         $this->modelsTypes = new modelsTypes();
         $this->modelsLocalities = new modelsLocalities();
+
 
         $types = $this->modelsTypes->getTypes();
         $localities = $this->modelsLocalities->getLocalities();
@@ -56,39 +55,58 @@ class Companies
         return compact('types', 'view', 'localities');
     }
 
-    public function addCompany() {
+    public function addCompany() { // Ajoute une entreprise
+        $this->modelsCompanies = new modelsCompanies();
 
         $details['name'] = $_POST['name'];
         $details['type'] = $_POST['type'];
         $details['locality'] = $_POST['locality'];
         $details['address'] = $_POST['address'];
-        $details['description'] = $_POST['description'];
+        if(isset($_POST['description'])) {
+            $details['description'] = $_POST['description'];
+        }
+        $details['img'] = null;
 
         if(isset($_FILES['img'])) {
+            if(!$_FILES['img']['error']) {
+                $allowedTypes = ['image/jpeg', 'image/jpg', 'image/png'];
+                if (in_array($_FILES['img']['type'], $allowedTypes)) {
+                    $typeParts = explode('/', $_FILES['img']['type']);
+                    $ext = '.' . $typeParts[count($typeParts) - 1];
+                    $sourceFile = $_FILES['img']['tmp_name'];
+                    $destFile = './assets/f' . time() . rand(1000, 9999) . $ext;
+                    $requiredWidth = 350;
 
-        }
-        if(!$_FILES['img']['error']) {
-            $allowedTypes = ['image/jpeg', 'image/jpg', 'image/png'];
-            if (in_array($_FILES['img']['type'], $allowedTypes)) {
-                $typeParts = explode('/', $_FILES['img']['type']);
-                $ext = '.' . $typeParts[count($typeParts) - 1];
-                $sourceFile = $_FILES['img']['tmp_name'];
-                $destFile = './assets/f' . time() . rand(1000, 9999) . $ext;
-                $requiredWidth = 350;
+                    list($srcW, $srcH) = getimagesize($_FILES['img']['tmp_name']);
 
-                list($srcW, $srcH) = getimagesize($_FILES['img']['tmp_name']);
-                $srcResource = imagecreatefromjpeg($_FILES['img']['tmp_name']);
+                    if($_FILES['img']['type'] === 'image/png') {
+                        $srcResource = imagecreatefrompng($_FILES['img']['tmp_name']);
+                    } else {
+                        $srcResource = imagecreatefromjpeg($_FILES['img']['tmp_name']);
+                    }
 
-                $ratio = $srcW/$requiredWidth;
-                $destW = $srcW*$ratio;
-                $destH = $srcH*$ratio;
+                    $ratio = $requiredWidth/$srcW;
+                    $destW = $srcW*$ratio;
+                    $destH = $srcH*$ratio;
 
-                $destResource = imagecreatetruecolor($destW,$destH);
-                imagecopyresampled($destResource, $srcResource, 0, 0, 0, 0, $destW, $destH, $srcW, $srcH);
-                imagejpeg($destResource, $destFile, 100);
+                    $destResource = imagecreatetruecolor($destW,$destH);
+                    imagecopyresampled($destResource, $srcResource, 0, 0, 0, 0, $destW, $destH, $srcW, $srcH);
 
-                $details['img'] = $destFile;
+                    if($_FILES['img']['type'] === 'image/png') {
+                        imagepng($destResource, $destFile, 9);
+                    } else {
+                        imagejpeg($destResource, $destFile, 100);
+                    }
+
+                    $details['img'] = $destFile;
+                }
             }
         }
+
+        $lastInsertId = $this->modelsCompanies->addCompany($details);
+        $this->modelsCompanies->linkUserCompany($_SESSION['user']->id, $lastInsertId);
+
+        header('Location:'.SITE_URL.'/index.php?a=getUserCompanies&r=companies');
+        exit;
     }
 }
