@@ -63,6 +63,15 @@
 
             <?php endif; ?>
         </nav>
+        <?php if(isset($_SESSION['error'])) : ?>
+            <p class="error"><?= $_SESSION['error']; ?></p>
+            <?php $_SESSION['error'] = null; ?>
+        <?php endif; ?>
+
+        <?php if(isset($_SESSION['success'])) : ?>
+            <p class="success"><?= $_SESSION['success']; ?></p>
+            <?php $_SESSION['success'] = null; ?>
+        <?php endif; ?>
     </header>
     <section class="wrapper">
         <h2>Contenu principal</h2>
