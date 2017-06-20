@@ -6,7 +6,7 @@
  * Time: 13:17
  */
 
-namespace controllers;
+namespace Controllers;
 
 
 class Image

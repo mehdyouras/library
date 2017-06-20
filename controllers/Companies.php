@@ -6,17 +6,18 @@
  * Time: 20:03
  */
 
-namespace controllers;
+namespace Controllers;
 use Models\Companies as modelsCompanies;
 use Models\Types as modelsTypes;
 use Models\Localities as modelsLocalities;
+use Controllers\Image as controllersImage;
 
-class Companies extends Image
+class Companies extends Controller
 {
     private $modelsCompanies = null;
     private $modelsTypes = null;
     private $modelsLocalities = null;
-    private $controllerImage = null;
+    private $controllersImage = null;
 
     public function indexAll() { // Affiche toutes les entreprises
         $this->modelsCompanies = new modelsCompanies();
@@ -28,7 +29,7 @@ class Companies extends Image
             return compact('view', 'companies');
         }
 
-        die('Il a eu un problème lors de l\'affichage des entreprises');
+        return ['view' => 'views/part/noCompany.php'];
     }
 
     public function getUserCompanies() { // Affiche toutes les entreprises liées à l'user connecté
@@ -46,6 +47,7 @@ class Companies extends Image
     }
 
     public function getAddCompany() { // Récupère le formulaire pour ajouter une entreprise
+        $this->checkLogin();
         $this->modelsTypes = new modelsTypes();
         $this->modelsLocalities = new modelsLocalities();
 
@@ -58,8 +60,9 @@ class Companies extends Image
     }
 
     public function addCompany() { // Ajoute une entreprise
+        $this->checkLogin();
         $this->modelsCompanies = new modelsCompanies();
-        $this->controllerImage = new controllerImage();
+        $this->controllersImage = new controllersImage();
 
         $details['name'] = $_POST['name'];
         $details['type'] = $_POST['type'];
@@ -68,7 +71,7 @@ class Companies extends Image
         if(isset($_POST['description'])) {
             $details['description'] = $_POST['description'];
         }
-        $details['img'] = $this->controllerImage->handleImageUpload('img');
+        $details['img'] = $this->controllersImage->handleImageUpload('img');
 
         $lastInsertId = $this->modelsCompanies->addCompany($details);
         $this->modelsCompanies->linkUserCompany($_SESSION['user']->id, $lastInsertId);
@@ -78,6 +81,7 @@ class Companies extends Image
     }
 
     public function removeCompany() {
+        $this->checkLogin();
         $this->modelsCompanies = new modelsCompanies();
 
         $this->modelsCompanies->removeCompany($_POST['companyId']);
@@ -85,6 +89,7 @@ class Companies extends Image
     }
 
     public function getUpdateCompany() {
+        $this->checkLogin();
         $this->modelsTypes = new modelsTypes();
         $this->modelsLocalities = new modelsLocalities();
 
@@ -99,7 +104,8 @@ class Companies extends Image
     }
 
     public function updateCompany() {
-        $this->controllerImage = new controllerImage();
+        $this->checkLogin();
+        $this->controllersImage = new controllersImage();
 
         $details['name'] = $_POST['name'];
         $details['type'] = $_POST['type'];
@@ -108,6 +114,9 @@ class Companies extends Image
         if(isset($_POST['description'])) {
             $details['description'] = $_POST['description'];
         }
-        $details['img'] = $this->controllerImage->handleImageUpload('img');
+        $details['img'] = $this->controllersImage->handleImageUpload('img');
+
+        header('Location:'.SITE_URL.'/index.php?a=getUserCompanies&r=companies');
+        exit;
     }
 }

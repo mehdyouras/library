@@ -6,7 +6,7 @@
  * Time: 19:46
  */
 
-namespace controllers;
+namespace Controllers;
 use \Models\Auth as ModelsAuth;
 
 class Auth {
@@ -25,7 +25,6 @@ class Auth {
     }
 
     public function checkLogin() {
-        var_dump('checkLogin');
         $_SESSION['email'] = $_POST['email'];
         $user = $this->authModel->checkUser($_POST['email'], $_POST['password']);
         if($user) {
@@ -50,5 +49,17 @@ class Auth {
         session_destroy();
         header('Location:'.SITE_URL);
         exit;
+    }
+
+    public function getRegister() {
+        if(isset($_SESSION['user'])) {
+            header('Location: '.SITE_URL);
+            exit;
+        }
+        return ['view' => 'views/part/registerUser.php'];
+    }
+
+    public function register() {
+
     }
 }

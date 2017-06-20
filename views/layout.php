@@ -21,6 +21,15 @@
                        name="r"
                        value="auth">
             </form>
+            <form action="index.php" method="get">
+                <button type="submit">S'inscrire</button>
+                <input type="hidden"
+                    name="a"
+                    value="getRegister">
+                <input type="hidden"
+                    name="r"
+                    value="auth">
+                </form>
             <?php endif; ?>
 
             <?php if(isset($_SESSION['user'])) : ?>
