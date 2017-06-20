@@ -72,7 +72,6 @@
             <?php endforeach; ?>
             <?php $_SESSION['error'] = null; ?>
         <?php endif; ?>
-
         <?php if(isset($_SESSION['success_message'])) : ?>
             <?php foreach ($_SESSION['success_message'] as $success) : ?>
                 <p class="success"><?= $success ?></p>

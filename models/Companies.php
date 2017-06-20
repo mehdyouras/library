@@ -107,13 +107,13 @@ class Companies
                                 types.name as companyType,
                                 localities.name as companyLocality,
                                 companies.streetAddress as companyAddress,
-                                companies.img as companyImg
+                                companies.img as companyImg,
                                 companies.email as companyEmail,
                                 companies.phone as companyPhone
                                 FROM companies
                                 LEFT JOIN types ON companies.type = types.id
                                 LEFT JOIN localities ON companies.locality = localities.id
-                                WHERE :type = types.id  ';
+                                WHERE :type = types.id';
                     try{
                         $pdoSt = $pdo->prepare($sql);
                         $pdoSt->execute([

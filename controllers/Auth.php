@@ -29,7 +29,7 @@ class Auth {
         $user = $this->authModel->checkUser($_POST['email'], sha1($_POST['password']));
         if($user) {
             $_SESSION['user'] = $user[0];
-            $_SESSION['success'][] = 'Vous vous êtes connecté avec succès !';
+            $_SESSION['success_message'][] = 'Vous vous êtes connecté avec succès !';
             header('Location:'.SITE_URL);
             exit;
         } elseif($_POST['email'] === '' || $_POST['password'] === '') {
@@ -68,12 +68,12 @@ class Auth {
 
     public function register() {
         if(isset($_POST['email']) && ($_POST['password'] === $_POST['passwordCheck'])) {
-            $_SESSION['success_message'][] = 'Votre compte a été créé avec succès. Vous pouvez dés à présent vous connecter.';
             $uniqid = uniqid();
             $email = $_POST['email'];
             $password = sha1($_POST['password']);
             $this->authModel->register($uniqid, $email, $password);
-            header('Location:'.SITE_URL);
+            $_SESSION['success_message'][] = 'Votre compte a été créé avec succès. Vous pouvez dés à présent vous connecter.';
+            return ['view' => 'views/part/userLogin.php'];
         } elseif(!isset($_POST) || !isset($_POST['password']) || !isset($_POST['passwordCheck'])) {
             $_SESSION['error'][] = 'Vérifiez les champs et réessayez.';
             return ['view' => 'views/part/registerUser.php'];

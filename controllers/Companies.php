@@ -69,7 +69,7 @@ class Companies extends Controller
         $view = 'views/part/companyIndex.php';
 
         if(!$companies) {
-            $_SESSION['error'] = 'Aucun résultat.';
+            $_SESSION['error'][] = 'Aucun résultat.';
         }
 
         return compact('companies', 'view', 'localities', 'types');
@@ -144,6 +144,7 @@ class Companies extends Controller
 
         $lastInsertId = $this->modelsCompanies->addCompany($details);
         $this->modelsCompanies->linkUserCompany($_SESSION['user']->id, $lastInsertId);
+        $_SESSION['success_message'][] = 'L\'entreprise a été ajoutée avec succès !';
 
         header('Location:'.SITE_URL.'/index.php?a=getUserCompanies&r=companies');
         exit;
@@ -153,6 +154,7 @@ class Companies extends Controller
         $this->checkLogin();
 
         $this->modelsCompanies->removeCompany($_POST['companyId']);
+        $_SESSION['success_message'][] = 'L\'entreprise a été supprimée avec succès !';
         header('Location:'.SITE_URL.'/index.php?a=getUserCompanies&r=companies');
     }
 
@@ -193,7 +195,7 @@ class Companies extends Controller
         }
 
         $this->modelsCompanies->updateCompany($details);
-
+        $_SESSION['success_message'][] = 'L\'entreprise a été modifiée avec succès !';
         header('Location:'.SITE_URL.'/index.php?a=getUserCompanies&r=companies');
         exit;
     }
