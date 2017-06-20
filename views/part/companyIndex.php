@@ -1,12 +1,14 @@
 
 <ul>
-    <?php var_dump($data['companies']); foreach ($data['companies'] as $company) :  ?>
-        <li>
-            <p><?= $company->companyName; ?></p>
-            <p><?= $company->companyType; ?></p>
-            <p><?= $company->companyLocality; ?></p>
-            <p><?= $company->companyAddress; ?></p>
-            <img width="300px" src="<?= $company->companyImg ?>" alt="tets">
-        </li>
+    <?php foreach ($data['companies'] as $company) :  ?>
+        <?php if(isset($_GET['updateId'])) : ?>
+            <?php if($company->companyId === $_GET['updateId']) : ?>
+                <?php include 'views/part/updateCompany.php'; ?>
+            <?php else : ?>
+                <?php include 'views/part/companyItem.php'; ?>
+            <?php endif; ?>
+        <?php else : ?>
+            <?php include 'views/part/companyItem.php'; ?>
+        <?php endif; ?>
     <?php endforeach; ?>
 </ul>

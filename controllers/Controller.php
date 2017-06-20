@@ -11,7 +11,7 @@ namespace controllers;
 
 class Controller
 {
-    public function checkLogin() {
+    protected function checkLogin() {
         if(!isset($_SESSION['user'])) {
             header('Location:'.SITE_URL);
             exit;
