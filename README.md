@@ -7,7 +7,7 @@
 - S'inscrire
 - Se connecter
 
-## En étant connecter
+## En étant connecté
 
 - Lister toutes les entreprises
 - Filter les entreprises
